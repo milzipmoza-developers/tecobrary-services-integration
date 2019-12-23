@@ -1,0 +1,71 @@
+version: "3.2"
+services:
+  tecobrary-es:
+    container_name: tecobrary-es
+    build:
+      context: ./tecobrary-elk/elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    stdin_open: true
+    tty: true
+    networks:
+      - tecobrary-elk-network
+
+  tecobrary-kibana:
+    container_name: tecobrary-kibana
+    build:
+      context: ./tecobrary-elk/kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    ports:
+      - "5601:5601"
+    depends_on:
+      - tecobrary-es
+    networks:
+      - tecobrary-elk-network
+
+  tecobrary-logstas:
+    container_name: tecobrary-logstash
+    build:
+      context: ./tecobrary-elk/logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    ports:
+      - "9600:9600"
+      - "5001:5000"
+    environment:
+      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+    depends_on:
+      - tecobrary-es
+    networks:
+      - tecobrary-elk-network
+
+  slackbot-api:
+    container_name: tecobrary-slackbot
+    build:
+      context: ./tecobrary-noti-slackbot/
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./tecobrary-noti-slackbot/settings-tecobrary-slack/.env
+    environment:
+      - LC_ALL=C.UTF-8
+      - SLACK_AUTH_TOKEN=$SLACK_AUTH_TOKEN
+      - REQUESTED_CHANNEL=$REQUESTED_CHANNEL
+      - ENROLLED_CHANNEL=$ENROLLED_CHANNEL
+
+networks:
+  tecobrary-elk-network:
+    driver: bridge
+
+volumes:
+  elasticsearch:h
