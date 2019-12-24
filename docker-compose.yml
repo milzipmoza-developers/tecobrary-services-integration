@@ -1,7 +1,7 @@
 version: "3.2"
 services:
-  tecobrary-es:
-    container_name: tecobrary-es
+  es-elk:
+    container_name: es-elk
     build:
       context: ./tecobrary-elk/elasticsearch/
       args:
@@ -20,8 +20,8 @@ services:
     networks:
       - tecobrary-elk-network
 
-  tecobrary-kibana:
-    container_name: tecobrary-kibana
+  kibana-elk:
+    container_name: kibana-elk
     build:
       context: ./tecobrary-elk/kibana/
       args:
@@ -29,12 +29,12 @@ services:
     ports:
       - "5601:5601"
     depends_on:
-      - tecobrary-es
+      - es-elk
     networks:
       - tecobrary-elk-network
 
-  tecobrary-logstas:
-    container_name: tecobrary-logstash
+  logstash-elk:
+    container_name: logstash-elk
     build:
       context: ./tecobrary-elk/logstash/
       args:
@@ -45,12 +45,12 @@ services:
     environment:
       - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
     depends_on:
-      - tecobrary-es
+      - es-elk
     networks:
       - tecobrary-elk-network
 
   slackbot-api:
-    container_name: tecobrary-slackbot
+    container_name: slackbot-api
     build:
       context: ./tecobrary-noti-slackbot/
     ports:
