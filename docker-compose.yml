@@ -59,9 +59,9 @@ services:
       - ./tecobrary-noti-slackbot/settings-tecobrary-slack/.env
     environment:
       - LC_ALL=C.UTF-8
-      - SLACK_AUTH_TOKEN=$SLACK_AUTH_TOKEN
-      - REQUESTED_CHANNEL=$REQUESTED_CHANNEL
-      - ENROLLED_CHANNEL=$ENROLLED_CHANNEL
+      - SLACK_AUTH_TOKEN=${SLACK_AUTH_TOKEN}
+      - REQUESTED_CHANNEL=${REQUESTED_CHANNEL}
+      - ENROLLED_CHANNEL=${ENROLLED_CHANNEL}
 
 networks:
   tecobrary-elk-network:
